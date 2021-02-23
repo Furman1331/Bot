@@ -39,4 +39,4 @@ client.on('message', async message => {
     } 
 });
 
-client.login(settings.tokentotest);
+client.login(settings.token);
