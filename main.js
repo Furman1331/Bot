@@ -14,7 +14,7 @@ client.on('message', function(message) {
     const command = args.shift().toLowerCase();
 
     if (command === 'help') {
-        message.channel.send(`Witam w czym mogę pomóc ?`)
+        message.author.send(`Witam w czym mogę pomóc ?`)
     }
     else if(command === 'clear') {
         if(message.member.hasPermission("MANAGE_MESSAGES")) {
