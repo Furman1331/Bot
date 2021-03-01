@@ -20,7 +20,7 @@ client.on('message', async message => {
     const command = args.shift().toLowerCase();
 
     if (command === 'help') {
-        message.author.send(`Dostępne komedy : !help - Dostępne komendy `).then(messages => setTimeout(() => { message.delete()}, 4000));
+        message.author.send(`Dostępne komedy : !help - Dostępne komendy  \n  !clear <ilość> - wyczyść wiadomości `).then(messages => setTimeout(() => { message.delete()}, 4000));
     }
     else if(command === 'clear') {
         if(message.member.hasPermission("MANAGE_MESSAGES")) {
