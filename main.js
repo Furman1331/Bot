@@ -47,6 +47,7 @@ client.on('message', async message => {
     else if(command === 'warn') {
         if(message.member.hasPermission("ADMINISTRATOR") || (message.guild.roles.cache.find(role => role.name === "Community Manager" || role.name === "Owner" || role.name === "Admin"))) {
             const user = getUserFromMention(args[0]);
+            const reason = args[1] && args[1].trim() || "Brak powodu";
             if(!user) {
                 return message.channel.send(`Nie ma takiego użytkownika, ${message.author}!`).then(messages => setTimeout(() => { messages.delete(), message.delete()}, 4000));
             }
@@ -56,11 +57,17 @@ client.on('message', async message => {
                 client.warn[message.author.id] = {
                     "warn": 0
                 }
-
-                fs.writeFile("./warn.json", JSON.stringify(client.warn, null, 4), err => {
-                    if(err) throw err;
-                });
             }
+
+            let warnCount = client.warn[message.author.id].warn = client.warn[message.author.id].warn + 1
+            fs.writeFile("./warn.json", JSON.stringify(client.warn, null, 4), err => {
+                if(err) throw err;
+            });
+
+            return message.channel.send(`Pomyślnie nadano warna dla \`${user.username}\`! To jest jego \`${warnCount}\` warn, ${message.author}`)
+                .then(messages => setTimeout(() => { messages.delete(), message.delete()}, 4000))
+                .then(any => {client.channels.cache.get(settings.warnLogs).send(`Administrator \|\|${message.author}\|\|, nadał warna graczu \`${user.username}\` i to jest jego \`${warnCount}\` warn!`)})
+                .then(private => user.send(`Otrzymałeś warna od administratora \|\|${message.author}\|\|, Powód warna : \`${reason}\`! To jest twój \`${warnCount}\` warn, ${user}`));
         }
     }
 });
@@ -79,4 +86,4 @@ function getUserFromMention(mention) {
     }
 }
 
-client.login(settings.token);
+client.login(settings.tokentotest);
