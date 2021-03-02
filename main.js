@@ -51,12 +51,10 @@ client.on('message', async message => {
                 return message.channel.send(`Nie ma takiego użytkownika, ${message.author}!`).then(messages => setTimeout(() => { messages.delete(), message.delete()}, 4000));
             }
 
-            let warn = JSON.parse(fs.readFile("./warn.json", "utf-8"));
-
             if(!client.warn[message.author.id]) {
                 console.log(`Hello add warn`);
                 client.warn[message.author.id] = {
-                    warn: 0
+                    "warn": 0
                 }
 
                 fs.writeFile("./warn.json", JSON.stringify(client.warn, null, 4), err => {
