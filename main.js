@@ -1,9 +1,9 @@
 const Discord = require('discord.js');
+const fs = require('fs');
+client.warn = require("./warn.json");
 const client = new Discord.Client();
 const settings = require('./settings.json');
 const prefix = settings.prefix || "!";
-
-const Mysql = require('mysql');
 
 client.on('ready', async () => {
     console.log(`Pomyślnie uruchomiono bota ${settings.name}!`);
@@ -50,7 +50,17 @@ client.on('message', async message => {
                 return message.channel.send(`Nie ma takiego użytkownika, ${message.author}!`).then(messages => setTimeout(() => { messages.delete(), message.delete()}, 4000));
             }
 
-            console.log(` User ${user.id}`)
+            let warn = JSON.parse(fs.readFile("./warn.json", "utf-8"));
+
+            if(!client.warn[message.author.id]) {
+                client.warn[message.author.id] = {
+                    warn: 0
+                }
+
+                fs.writeFile("./warn.json", JSON.stringify(client.warn, null, 4), err => {
+                    if(err) throw err;
+                })
+            }
         }
     }
 });
