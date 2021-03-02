@@ -61,6 +61,7 @@ client.on('message', async message => {
 
                 fs.writeFile("./warn.json", JSON.stringify(client.warn, null, 4), err => {
                     if(err) throw err;
+                    return;
                 });
             }
         }
