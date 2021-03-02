@@ -1,8 +1,9 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const settings = require('./settings.json');
-
 const prefix = settings.prefix || "!";
+
+const Mysql = require('mysql');
 
 
 let roleName = "";
@@ -26,23 +27,50 @@ client.on('message', async message => {
     const command = args.shift().toLowerCase();
 
     if (command === 'help') {
-        message.author.send(`Dostępne komedy : \`\`\` \n!help - Dostępne komendy\n !clear <ilość> - wyczyść wiadomości \`\`\` `).then(messages => setTimeout(() => { message.delete()}, 4000));
+        message.author.send(`Dostępne komedy: \`\`\`!help - Dostępne komendy\n!faq - Najczęściej zadawane pytania.\`\`\``).then(message => setTimeout(() => {message.delete();}, 4000));
+    }
+    else if (command === 'faq'){
+        message.author.send(`Obecnie nie dostępne`).then(messages => setTimeout(() => {messages.delete();}, 4000));
     }
     else if(command === 'clear') {
         if(message.member.hasPermission("MANAGE_MESSAGES")) {
             const amount = parseInt(args[0]);
             if(!args.length) {
                 return message.channel.send(`Nie podano ilości, ${message.author}!`).then(messages => setTimeout(() => { messages.delete(); message.delete()}, 4000));
-            } 
+            }
             else if(!isNaN(amount)) {
                 message.channel.bulkDelete(amount + 1).catch(error => console.log(error.stack)).then(messages => console.log(`Wyczyszczono wiadomości na kanale ${message.channel.name}, ilość : ${amount} !`)).catch(console.error);
-                message.channel.send(`Pomyślnie usunięto wiadomości, ${message.author}!`).then(messages => setTimeout(() => { messages.delete()}, 4000));
-            } 
+                return message.channel.send(`Pomyślnie usunięto wiadomości, ${message.author}!`).then(messages => setTimeout(() => { messages.delete()}, 4000));
+            }
             else {
                 return message.channel.send(`Argument musi być liczbą, ${message.author}!`).then(messages => setTimeout(() => { messages.delete(), message.delete()}, 4000));
             }
         }
-    } 
+    }
+    else if(command === 'warn') {
+        if(message.member.hasPermission("ADMINISTRATOR") || (message.guild.roles.cache.find(role => role.name === "Community Manager" || role.name === "Owner" || role.name === "Admin"))) {
+            const user = getUserFromMention(args[0]);
+            if(!user) {
+                return message.channel.send(`Nie ma takiego użytkownika, ${message.author}!`).then(messages => setTimeout(() => { messages.delete(), message.delete()}, 4000));
+            }
+
+            console.log(` User ${user.guild_id}`)
+        }
+    }
 });
+
+function getUserFromMention(mention) {
+    if(!mention) return;
+
+    if(mention.startsWith('<@') && mention.endsWith('>')) {
+        mention = mention.slice(2, -1);
+
+        if(mention.startsWith('!')) {
+            mention = mention.slice(1);
+        }
+
+        return client.users.cache.get(mention);
+    }
+}
 
 client.login(settings.token);
