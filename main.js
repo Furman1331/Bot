@@ -67,11 +67,11 @@ client.on('message', async message => {
                 if(err) throw err;
             });
 
-            /*return message.channel.send(`Pomyślnie nadano warna dla \`${user.username}\`! To jest jego \`${warnCount}\` warn, ${message.author}`)
+            return message.channel.send(`Pomyślnie nadano warna dla \`${user.username}\`! To jest jego \`${warnCount}\` warn, ${message.author}`)
                 .then(messages => setTimeout(() => { messages.delete(), message.delete()}, settings.timeToDelete))
                 .then(any => {client.channels.cache.get(settings.warnLogs).send(`Administrator \|\|${message.author}\|\|, nadał warna graczu \`${user.username}\` i to jest jego \`${warnCount}\` warn!`)})
                 .then(private => user.send(`Otrzymałeś warna od administratora \|\|${message.author}\|\|, Powód warna : \`${reason}\`! To jest twój \`${warnCount}\` warn, ${user}`));
-            */
+            
         }
     }
 });
