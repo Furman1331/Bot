@@ -5,13 +5,9 @@ const prefix = settings.prefix || "!";
 
 const Mysql = require('mysql');
 
-
-let roleName = "";
-
 client.on('ready', async () => {
     console.log(`Pomyślnie uruchomiono bota ${settings.name}!`);
     await client.user.setActivity('!help © FurmanBot', {type: "WATCHING"}).then(presence => console.log(`Pomyślnie ustawiono aktywność dla bota ${settings.name}!`)).catch(console.error);
-    roleName = client.guilds.get(guild_id).roles.get(verified_role_id).name;
 });
 
 client.on('message', async message => {
