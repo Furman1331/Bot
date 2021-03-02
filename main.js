@@ -1,10 +1,16 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const settings = require('./settings.json')
+const settings = require('./settings.json');
 
-client.on('ready', () => {
+const prefix = settings.prefix || "!";
+
+
+let roleName = "";
+
+client.on('ready', async () => {
     console.log(`Pomyślnie uruchomiono bota ${settings.name}!`);
-    client.user.setActivity('!help © CentrumPack', {type: "WATCHING"}).then(presence => console.log(`Pomyślnie ustawiono aktywność dla bota ${settings.name}!`)).catch(console.error);
+    await client.user.setActivity('!help © FurmanBot', {type: "WATCHING"}).then(presence => console.log(`Pomyślnie ustawiono aktywność dla bota ${settings.name}!`)).catch(console.error);
+    roleName = client.guilds.get(guild_id).roles.get(verified_role_id).name;
 });
 
 client.on('message', async message => {
@@ -14,13 +20,13 @@ client.on('message', async message => {
         await message.author.send(`${message.author}, Nie masz uprawnien do wysyłania linków!`).then(message.delete()).catch(console.error);
     };
 
-    if(!message.content.startsWith(settings.prefix) || message.author.bot) return;
+    if(!message.content.startsWith(prefix) || message.author.bot) return;
 
-    const args = message.content.slice(settings.prefix.length).trim().split(' ');
+    const args = message.content.slice(prefix.length).trim().split(' ');
     const command = args.shift().toLowerCase();
 
     if (command === 'help') {
-        message.author.send(`Dostępne komedy : \`\`\` \n!help - Dostępne komendy  \n  !clear <ilość> - wyczyść wiadomości \`\`\` `).then(messages => setTimeout(() => { message.delete()}, 4000));
+        message.author.send(`Dostępne komedy : \`\`\` \n!help - Dostępne komendy\n !clear <ilość> - wyczyść wiadomości \`\`\` `).then(messages => setTimeout(() => { message.delete()}, 4000));
     }
     else if(command === 'clear') {
         if(message.member.hasPermission("MANAGE_MESSAGES")) {
