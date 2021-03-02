@@ -54,7 +54,7 @@ client.on('message', async message => {
                 return message.channel.send(`Nie ma takiego użytkownika, ${message.author}!`).then(messages => setTimeout(() => { messages.delete(), message.delete()}, 4000));
             }
 
-            console.log(` User ${user.guild_id}`)
+            console.log(` User ${user.id}`)
         }
     }
 });
