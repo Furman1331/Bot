@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
 const fs = require('fs');
-client.warn = require("./warn.json");
 const client = new Discord.Client();
 const settings = require('./settings.json');
 const prefix = settings.prefix || "!";
+
+client.warn = require("./warn.json");
 
 client.on('ready', async () => {
     console.log(`Pomyślnie uruchomiono bota ${settings.name}!`);
