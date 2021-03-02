@@ -53,6 +53,7 @@ client.on('message', async message => {
             let warn = JSON.parse(fs.readFile("./warn.json", "utf-8"));
 
             if(!client.warn[message.author.id]) {
+                console.log(`Hello add warn`);
                 client.warn[message.author.id] = {
                     warn: 0
                 }
