@@ -27,7 +27,7 @@ client.on('message', async message => {
         message.author.send(`Dostępne komedy: \`\`\`!help - Dostępne komendy\n!faq - Najczęściej zadawane pytania.\`\`\``).then(message => setTimeout(() => {message.delete();}, settings.timeToDelete));
     }
     else if (command === 'faq'){
-        message.author.send(`Obecnie nie dostępne`).then(messages => setTimeout(() => {messages.delete();}, settings.timeToDelete));
+        message.author.send(`Dlaczego serwer jest OFF ? - OVH miało awarie i obecnie czekamy na nowy serwer.`).then(messages => setTimeout(() => {message.delete();}, settings.timeToDelete));
     }
     else if(command === 'clear') {
         if(message.member.hasPermission("MANAGE_MESSAGES")) {
