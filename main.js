@@ -111,4 +111,4 @@ function ClearMessagesAfterTime(array, time) {
     time)
 }
 
-client.login(settings.tokentotest);
+client.login(settings.token);
