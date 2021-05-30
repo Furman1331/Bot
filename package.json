@@ -9,7 +9,8 @@
   "author": "Furman",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.5.1",
+    "axios": "^0.21.1",
+    "discord.js": "^12.5.3",
     "fs": "0.0.1-security",
     "mysql": "^2.18.1"
   }

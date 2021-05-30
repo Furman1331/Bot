@@ -1,7 +1,10 @@
 {
     "name":"CentrumPack Helper",
-    "token":"ODA4NDQ2ODM2MzYwMzQ3NjY5.YCGqyg.FehEGBVmUj7L5nkdnjKfM9rssBU",
-	"tokentotest":"ODEzNzU1NTUyMDYzNTUzNjE2.YDT66g.98iZY-egxTMLF4iBtcsOtmqcy8g",
+    "guildID":"838147203973120100",
+    "token":"ODQ4NjExNDY2OTcwMDA1NTA1.YLPJBA.JyKaoLkk6KuhSSvcmfhuM_NrJl0",
+    "waitingRoom": "838165814896754689",
+    "whitelistRole":"838149680512106526",
+    "countMemberChannel": "848647260585852928",
     "prefix":"!",
     "timeToDelete":5000,
     "warnLogs":"816428352067862568"

@@ -1,14 +1,20 @@
+const { strict } = require('assert');
 const Discord = require('discord.js');
 const fs = require('fs');
+const { stringify } = require('querystring');
 const client = new Discord.Client();
 const settings = require('./settings.json');
 const prefix = settings.prefix || "!";
+
+const command = require('./command');
+const memberCount = require('./modules/countMember')
 
 client.info = require("./warn.json");
 
 client.on('ready', async () => {
     console.log(`Pomyślnie uruchomiono bota ${settings.name}!`);
-    await client.user.setActivity('!help © FurmanBot', {type: "WATCHING"}).then(presence => console.log(`Pomyślnie ustawiono aktywność dla bota ${settings.name}!`)).catch(console.error);
+    memberCount(client);
+    await client.user.setActivity('!help © CentrumRP Bot - Niedługo Start', {type: "WATCHING"}).then(presence => console.log(`Pomyślnie ustawiono aktywność dla bota ${settings.name}!`)).catch(console.error);
 });
 
 client.on('message', async message => {
@@ -27,7 +33,7 @@ client.on('message', async message => {
         message.author.send(`Dostępne komedy: \`\`\`!help - Dostępne komendy\n!faq - Najczęściej zadawane pytania.\`\`\``).then(message => setTimeout(() => {message.delete();}, settings.timeToDelete));
     }
     else if (command === 'faq'){
-        message.author.send(`Dlaczego serwer jest OFF ? - OVH miało awarie i obecnie czekamy na nowy serwer.`).then(messages => setTimeout(() => {message.delete();}, settings.timeToDelete));
+        message.author.send(`Dlaczego serwer jest OFF ? - Obecnie trwają prace techniczne.`).then(messages => setTimeout(() => {message.delete();}, settings.timeToDelete));
     }
     else if(command === 'clear') {
         if(message.member.hasPermission("MANAGE_MESSAGES")) {
@@ -85,6 +91,44 @@ client.on('message', async message => {
 
             return message.channel.send(`Pomyślnie usunięto warna dla użytkownika ${user.username}, obecna ilość warnów ${warnCount} ${message.author}`)
             .then(messages => ClearMessagesAfterTime([message, messages], settings.timeToDelete));
+        }
+    }
+    else if (command === 'wl-losuj') {
+        if(message.member.hasPermission("ADMINISTRATOR") || (message.guild.roles.cache.find(role => role.name === "Whitelist Checker"))) {
+            const whitelistCheckerChannel = message.member.voice.channel
+            client.channels.fetch(settings.waitingRoom).then(channel => {
+                const randomUser = channel.members.random();
+                if (!randomUser) return message.channel.send(`Obecnie nie ma osób w kolejce, ${message.author}.`).then(messages =>ClearMessagesAfterTime([message, messages], settings.timeToDelete));
+                return message.channel.send(`Do zdania Whitelisty wylosowano, ${randomUser}`).then(randomUser.voice.setChannel(whitelistCheckerChannel));
+            })
+        }
+    }
+    else if (command === 'wl-zdal') {
+        if(message.member.hasPermission("ADMINISTRATOR") || (message.guild.roles.cache.find(role => role.name === "Whitelist Checker"))) {
+            const user = message.mentions.users.first();
+            if(!user) return message.channel.send(`Nie ma takiego użytkownika, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], settings.timeToDelete));
+
+            let filter = m => m.author.id === message.author.id
+            message.channel.send(`Czy napewno nadać white liste dla ${user.username}, \'tak\' / \'nie\'`).then(() => {
+                message.channel.awaitMessages(filter, {
+                    max: 1,
+                    time: 30000,
+                    errors: ['time']
+                }).then(message => {
+                    message = message.first()
+                    if (message.content.toUpperCase() == 'TAK' || message.content.toUpperCase() == 'YES') {
+                        const target = message.guild.members.cache.get(user.id)
+                        target.roles.add(settings.whitelistRole)
+                        return message.channel.send(`Nadano whiteliste dla obywatela, ${message.author}.`).then(messages => ClearMessagesAfterTime([message, messages], settings.timeToDelete));
+                    } else if (message.content.toUpperCase() == 'NIE' || message.content.toUpperCase() == 'NO') {
+                        return message.channel.send(`Zrezygnowano, ${message.author}.`).then(messages => ClearMessagesAfterTime([message, messages], settings.timeToDelete));
+                    } else {
+                        return message.channel.send(`Błąd podczas wpisywania, ${message.author}.`).then(messages => ClearMessagesAfterTime([message, messages], settings.timeToDelete));
+                    }
+                }).catch(collected => {
+                    message.channel.send(`ERROR: ${collected}`);
+                });
+            })
         }
     }
 });
