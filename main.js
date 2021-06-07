@@ -48,23 +48,32 @@ client.on('message', async message => {
             }
         }
     }
+    else if (command === 'wl-help') {
+        if(message.member.hasPermission("ADMINISTRATOR") || (message.member.roles.cache.some(role => role.name === "Whitelist Checker"))) {
+            message.channel.send(`Dostępne komendy dla Whitelist Checkerów : \`\`\` wl-losuj - Losujesz gracza z kolejki na twój kanał. \n wl-zdal <@użytkownik> - nadanie rangi obywatela dla gracza. \`\`\``);
+        } else {
+            message.channel.send(`Nie masz uprawnień do tej komendy, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+        }
+    }
     else if (command === 'wl-losuj') {
-        if(message.member.hasPermission("ADMINISTRATOR") || (message.guild.roles.cache.find(role => role.name === "Whitelist Checker"))) {
+        if(message.member.hasPermission("ADMINISTRATOR") || (message.member.roles.cache.some(role => role.name === "Whitelist Checker"))) {
             const whitelistCheckerChannel = message.member.voice.channel
             client.channels.fetch(config.waitingRoom).then(channel => {
                 const randomUser = channel.members.random();
                 if (!randomUser) return message.channel.send(`Obecnie nie ma osób w kolejce, ${message.author}.`).then(messages =>ClearMessagesAfterTime([message, messages], config.timeToDelete));
                 return message.channel.send(`Do zdania Whitelisty wylosowano, ${randomUser}`).then(randomUser.voice.setChannel(whitelistCheckerChannel));
             })
+        } else {
+            message.channel.send(`Nie masz uprawnień do tej komendy, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
         }
     }
     else if (command === 'wl-zdal') {
-        if(message.member.hasPermission("ADMINISTRATOR") || (message.guild.roles.cache.find(role => role.name === "Whitelist Checker"))) {
+        if(message.member.hasPermission("ADMINISTRATOR") || (message.member.roles.cache.some(role => role.name === "Whitelist Checker"))) {
             const user = message.mentions.users.first();
-            if(!user) return message.channel.send(`Nie ma takiego użytkownika, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+            if(!user) return message.channel.send(`Nie znalezniono takiego użytkownika, odpowiednie użycie komendy !wl-zdal <@użytkownik>, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
 
             let filter = m => m.author.id === message.author.id
-            message.channel.send(`Czy napewno nadać white liste dla ${user.username}, \'tak\' / \'nie\'`).then(() => {
+            message.channel.send(`Czy napewno nadać white liste dla ${user.username}, [tak] / [nie], ${message.author}`).then(() => {
                 message.channel.awaitMessages(filter, {
                     max: 1,
                     time: 30000,
@@ -74,16 +83,25 @@ client.on('message', async message => {
                     if (message.content.toUpperCase() == 'TAK' || message.content.toUpperCase() == 'YES') {
                         const target = message.guild.members.cache.get(user.id)
                         target.roles.add(config.whitelistRole)
-                        return message.channel.send(`Nadano whiteliste dla obywatela, ${message.author}.`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+                        return message.channel.send(`Nadano whiteliste dla obywatela, ${message.author}.`);
                     } else if (message.content.toUpperCase() == 'NIE' || message.content.toUpperCase() == 'NO') {
-                        return message.channel.send(`Zrezygnowano, ${message.author}.`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+                        return message.channel.send(`Zrezygnowano, ${message.author}.`);
                     } else {
-                        return message.channel.send(`Błąd podczas wpisywania, ${message.author}.`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+                        return message.channel.send(`Błąd podczas wpisywania, ${message.author}.`);
                     }
                 }).catch(collected => {
                     message.channel.send(`ERROR: ${collected}`);
                 });
             })
+        }
+        else {
+            message.channel.send(`Nie masz uprawnień do tej komendy, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+        }
+    } else if (command === 'wl-niezdal') {
+        if(message.member.hasPermission("ADMINISTRATOR") || (message.member.roles.cache.some(role => role.name === "Whitelist Checker"))) {
+            // TODO
+        } else {
+            message.channel.send(`Nie masz uprawnień do tej komendy, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
         }
     }
 });
@@ -115,7 +133,7 @@ client.setInterval(async () => {
     client.channels.fetch(config.count_member_channelId).then(channel =>{
         request(config.fivem_info_url, function(err, response, fivemInfo) {
             request(config.fivem_players_url, function(err1, response1, fivemPlayers){
-                if (response == undefined || response1 == undefined) {
+                if (response === undefined || response1 === undefined) {
                     channel.setName(`Paros: OFFLINE`);
                     return
                 }

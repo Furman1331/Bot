@@ -1,0 +1,13 @@
+{
+    "name":"CentrumPack Helper",
+    "guildID":"838147203973120100",
+    "token":"ODQ4NjExNDY2OTcwMDA1NTA1.YLPJBA.JyKaoLkk6KuhSSvcmfhuM_NrJl0",
+    "waitingRoom": "838165814896754689",
+    "whitelistRole":"838149680512106526",
+    "prefix":"!",
+    "timeToDelete":5000,
+
+    "fivem_info_url": "http://51.83.135.67:30120/info.json",
+    "fivem_players_url": "http://51.83.135.67:30120/players.json",
+    "count_member_channelId": "848647260585852928"
+}
