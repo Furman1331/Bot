@@ -18,7 +18,7 @@ client.on('ready', async () => {
 client.on('message', async message => {
     const regex = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|club)|discordapp\.com\/invite|discord\.com\/invite)\/.+[a-z]/gi;
 
-    if(regex.exec(message.content)) {
+    if(regex.exec(message.content) && !message.member.hasPermission("ADMINISTRATOR")) {
         await message.author.send(`${message.author}, Nie masz uprawnien do wysyłania linków!`).then(message.delete()).catch(console.error);
     };
 
