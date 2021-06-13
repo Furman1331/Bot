@@ -145,7 +145,7 @@ client.setInterval(async () => {
                     var info = JSON.parse(fivemInfo);
                     var players = JSON.parse(fivemPlayers);
                     client.user.setActivity(`CentrumRP [${players.length}/${info.vars.sv_maxClients}] - !help © CentrumRP Bot`, {type: 'WATCHING'});
-                    channel.setName(`dev.centrumrp.eu: ${players.length}/${info.vars.sv_maxClients}`);
+                    channel.setName(`paros.centrumrp.eu: ${players.length}/${info.vars.sv_maxClients}`);
                 }
             });
         });
