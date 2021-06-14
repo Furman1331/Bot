@@ -1,6 +1,9 @@
 const Discord = require('discord.js');
 const request = require('request');
 
+const {promisify} = require('util');
+const readdir = promisify(require('fs').readdir);
+
 const config = require('./config.json');
 const prefix = config.prefix || "!";
 
@@ -13,7 +16,7 @@ const client = new Discord.Client({
 client.on('ready', async () => {
     console.log(`Pomyślnie uruchomiono bota ${config.name}!`);
     await client.user.setActivity('!help © CentrumRP Bot - Niedługo Start', {type: "WATCHING"});
-});
+})
 
 client.on('message', async message => {
     const regex = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|club)|discordapp\.com\/invite|discord\.com\/invite)\/.+[a-z]/gi;
@@ -50,7 +53,7 @@ client.on('message', async message => {
     }
     else if (command === 'wl-help') {
         if(message.member.hasPermission("ADMINISTRATOR") || (message.member.roles.cache.some(role => role.name === "Whitelist Checker"))) {
-            message.channel.send(`Dostępne komendy dla Whitelist Checkerów : \`\`\` wl-losuj - Losujesz gracza z kolejki na twój kanał. \n wl-zdal <@użytkownik> - nadanie rangi obywatela dla gracza. \`\`\``);
+            message.channel.send(`Dostępne komendy dla Whitelist Checkerów : \`\`\` wl-losuj - Losujesz gracza z kolejki na twój kanał. \n wl-zdal <@użytkownik> <steam:hex> - nadanie rangi obywatela dla gracza. \`\`\``);
         } else {
             message.channel.send(`Nie masz uprawnień do tej komendy, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
         }
@@ -70,7 +73,8 @@ client.on('message', async message => {
     else if (command === 'wl-zdal') {
         if(message.member.hasPermission("ADMINISTRATOR") || (message.member.roles.cache.some(role => role.name === "Whitelist Checker"))) {
             const user = message.mentions.users.first();
-            if(!user) return message.channel.send(`Nie znalezniono takiego użytkownika, odpowiednie użycie komendy !wl-zdal <@użytkownik>, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+            if(!user) return message.channel.send(`Nie znalezniono takiego użytkownika, odpowiednie użycie komendy !wl-zdal <@użytkownik><@steam:hex>, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], config.timeToDelete));
+            if(!steamValidation(args[1])) return message.channel.send(`Nieprawidłowo wprowadzono steam:hex, odpowiednie użycie komendy !wl-zdal <@użytkownik> <steam:hex>, ${message.author}!`).then(messages => ClearMessagesAfterTime([message, messages], (config.timeToDelete * 2)))
 
             let filter = m => m.author.id === message.author.id
             message.channel.send(`Czy napewno nadać white liste dla ${user.username}, [tak] / [nie], ${message.author}`).then(() => {
@@ -82,7 +86,8 @@ client.on('message', async message => {
                     message = message.first()
                     if (message.content.toUpperCase() == 'TAK' || message.content.toUpperCase() == 'YES') {
                         const target = message.guild.members.cache.get(user.id)
-                        target.roles.add(config.whitelistRole)
+                        target.roles.add(config.whitelistRole);
+                        client.channels.fetch(config.steamHexChannel).then(channel => channel.send(args[1]));
                         return message.channel.send(`Nadano whiteliste dla obywatela, ${message.author}.`);
                     } else if (message.content.toUpperCase() == 'NIE' || message.content.toUpperCase() == 'NO') {
                         return message.channel.send(`Zrezygnowano, ${message.author}.`);
@@ -126,6 +131,18 @@ function ClearMessagesAfterTime(array, time) {
             element.delete();
         }),
     time)
+}
+
+function steamValidation(str) {
+    if(str === undefined) return false;
+
+    if(str.search('steam:') === -1) return false;
+
+    if(str.length !== 21) return false;
+
+    if(str.substring(6, 10) !== '1100') return false;
+
+    return true
 }
 
 client.setInterval(async () => {
