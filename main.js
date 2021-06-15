@@ -145,9 +145,35 @@ function steamValidation(str) {
     return true
 }
 
-client.setInterval(async () => {
-    if(config.fivem_info_url == null || config.fivem_players_url == null || config.count_member_channelId == null) return;
-    client.channels.fetch(config.count_member_channelId).then(channel =>{
+// client.setInterval(async () => {
+//     if(config.fivem_info_url == null || config.fivem_players_url == null || config.count_member_channelId == null) return;
+//     client.channels.fetch(config.count_member_channelId).then(channel =>{
+//         request(config.fivem_info_url, function(err, response, fivemInfo) {
+//             request(config.fivem_players_url, function(err1, response1, fivemPlayers){
+//                 if (response === undefined || response1 === undefined) {
+//                     channel.setName(`Paros: OFFLINE`);
+//                     return
+//                 }
+//                 if (err || err1) {
+//                     channel.setName(`Paros: OFFLINE`);
+//                     console.log(`[Error] while refresh server Info.`)
+//                     return
+//                 } else {
+//                     var info = JSON.parse(fivemInfo);
+//                     var players = JSON.parse(fivemPlayers);
+//                     client.user.setActivity(`CentrumRP [${players.length}/${info.vars.sv_maxClients}] - !help © CentrumRP Bot`, {type: 'WATCHING'});
+//                     channel.setName(`paros.centrumrp.eu: ${players.length}/${info.vars.sv_maxClients}`);
+//                 }
+//             });
+//         });
+//     }).catch(error => {
+//         console.log(`[Error] Cannot find channel!`)
+//     });
+// }, 30 * 1000);
+
+client.channels.fetch(config.count_member_channelId).then(channel =>{
+    client.setInterval(async () => {
+        if(config.fivem_info_url == null || config.fivem_players_url == null || config.count_member_channelId == null) return;
         request(config.fivem_info_url, function(err, response, fivemInfo) {
             request(config.fivem_players_url, function(err1, response1, fivemPlayers){
                 if (response === undefined || response1 === undefined) {
@@ -166,9 +192,9 @@ client.setInterval(async () => {
                 }
             });
         });
-    }).catch(error => {
-        console.log(`[Error] Cannot find channel!`)
-    });
-}, 30 * 1000);
+    }, 30 * 1000);
+}).catch(error => {
+    console.error(`[ERROR] Cannot find channel! (Fivem update).`)
+});
 
 client.login(config.token);
